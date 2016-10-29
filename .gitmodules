@@ -1,0 +1,3 @@
+[submodule "external/metismex"]
+	path = external/metismex
+	url = https://github.com/YingzhouLi/metismex.git
