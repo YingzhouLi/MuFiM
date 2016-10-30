@@ -10,4 +10,6 @@ file_path = file_path(1:(tmp(end)-1));
 
 addpath(genpath([file_path 'src']));
 
+addpath(genpath([file_path 'external']));
+
 end
