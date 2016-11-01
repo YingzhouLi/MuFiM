@@ -10,6 +10,9 @@ if isa(A,'Multifrontal')
         LeftDivSymmRecursionUp  (MF.symboltree,MF.Ltree);
         LeftDivSymmRecursionDiag(MF.symboltree,MF.Dtree);
         LeftDivSymmRecursionDown(MF.symboltree,MF.Ltree);
+    elseif MF.symm == 2
+        LeftDivSymmRecursionUp  (MF.symboltree,MF.Ltree);
+        LeftDivSymmRecursionDown(MF.symboltree,MF.Utree);
     end
     
 else
@@ -26,8 +29,8 @@ end
         
         idx = Stree.idx;
         actidx = Stree.actidx;
-        C(idx,:) = Ltree.Linv*C(idx,:);
-        C(actidx,:) = C(actidx,:) - Ltree.ALDinv*C(idx,:);
+        C(idx,:) = Ltree.Matinv*C(idx,:);
+        C(actidx,:) = C(actidx,:) - Ltree.AMatinv*C(idx,:);
         
     end
 
@@ -39,20 +42,20 @@ end
         end
         
         idx = Stree.idx;
-        C(idx,:) = Dtree.Dinv*C(idx,:);
+        C(idx,:) = Dtree.Matinv*C(idx,:);
         
     end
 
-    function LeftDivSymmRecursionDown(Stree,Ltree)
+    function LeftDivSymmRecursionDown(Stree,Utree)
         
         idx = Stree.idx;
         actidx = Stree.actidx;
-        C(idx,:) = C(idx,:) - Ltree.ALDinv'*C(actidx,:);
-        C(idx,:) = Ltree.Linv'*C(idx,:);
+        C(idx,:) = C(idx,:) - Utree.AMatinv'*C(actidx,:);
+        C(idx,:) = Utree.Matinv'*C(idx,:);
         
         if strcmpi(Stree.type,'node')
-            LeftDivSymmRecursionDown(Stree.rtree,Ltree.rtree);
-            LeftDivSymmRecursionDown(Stree.ltree,Ltree.ltree);
+            LeftDivSymmRecursionDown(Stree.rtree,Utree.rtree);
+            LeftDivSymmRecursionDown(Stree.ltree,Utree.ltree);
         end
         
     end

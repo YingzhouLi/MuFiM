@@ -23,7 +23,6 @@ classdef SymbolMF
             elseif issymmetric(spones(A))
                 % symbolic symmetric, factorized as LDU
                 SMF.symm = 2;
-                error('Not supported yet');
             else
                 SMF.symm = 0;
                 error('Not supported yet');
