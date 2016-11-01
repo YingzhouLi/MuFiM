@@ -1,2 +1,2 @@
-# MF.m
+# MuFiM
 MultiFrontal Factorization for General Sparse Matrix
