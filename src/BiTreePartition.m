@@ -1,4 +1,16 @@
 function Btree = BiTreePartition(A,cutoff)
+% BITREEPARTITION Generates binary tree partition
+%   Btree = BITREEPARTITION(A) generates the binary tree partition for the
+%   graph of sparse matrix A. The graph of A is recursively bipartitioned
+%   via Metis. The default cutoff for the leaf level is 64 points.
+%
+%   Btree = BITREEPARTITION(A,cutoff) generates the binary tree partition
+%   for the graph of sparse matrix A. The leaf node contains less than
+%   cutoff points.
+%
+%   See also MULTIFRONTAL, SYMBOLMF.
+
+%   Copyright 2016 Yingzhou Li, Stanford University
 
 if nargin < 2
     cutoff = 64;
@@ -7,7 +19,6 @@ end
 N = size(A,1);
 
 Btree = BiTreePartitionRecursion(1:N,[],cutoff);
-
 
     function Btree = BiTreePartitionRecursion(gidx,actidx,cutoff)
         

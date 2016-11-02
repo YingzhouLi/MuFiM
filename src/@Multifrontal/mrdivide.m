@@ -1,5 +1,10 @@
 function C = mrdivide(A,B)
-% C=A/B
+% MRDIVIDE C = A/B
+%   C = A/B matrix A divided by matrix B which is factorized.
+%
+%   See also SYMBOLMF, MULTIFRONTAL.
+
+%   Copyright 2016 Yingzhou Li, Stanford University
 
 if isa(B,'Multifrontal')
     

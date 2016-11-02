@@ -1,5 +1,11 @@
 function C = mtimes(A,B)
-% C=A*B
+% MTIMES C = A B
+%   C = A*B multiplies matrix A and B together when either of them is
+%   factorized.
+%
+%   See also SYMBOLMF, MULTIFRONTAL.
+
+%   Copyright 2016 Yingzhou Li, Stanford University
 
 if isa(A,'Multifrontal')
     

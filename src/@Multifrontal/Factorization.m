@@ -1,5 +1,17 @@
 function MF = Factorization(MF,A)
-%Factorization
+% FACTORIZATION Multifrontal factorization
+%   MF = FACTORIZATION(MF,A) factorizes the matrix A as a data-sparse
+%   multiplication of lower or upper trangular matrices. If A is a
+%   numerically symmetric matrix, A is factorized as
+%       L_1 L_2 ... L_k D L_k^T ... L_2^T L_1^T,
+%   where L_i is lower trangular matrix. If A is a pattern symmetric
+%   matrix, A is factorized as
+%       A = L_1 L_2 ... L_k U_k ... U_2 U_1,
+%   where L_i is lower trangular matrix and U_j is upper trangular matrix.
+%
+%   See also SYMBOLMF, MULTIFRONTAL.
+
+%   Copyright 2016 Yingzhou Li, Stanford University
 
 if MF.symm == 1
     [MF.Ltree,MF.Dtree] = ...

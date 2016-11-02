@@ -1,5 +1,5 @@
 function [H,numEigVal] = getHfd2D(npc,K,opt)
-% 4th order finite difference
+% 2th order finite difference
 
 % Input:
 % npc - number of grid points per cell

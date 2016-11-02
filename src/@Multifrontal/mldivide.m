@@ -1,5 +1,10 @@
 function C = mldivide(A,B)
-% C=A\B
+% MRDIVIDE C = A\B
+%   C = A\B matrix B is left divided by matrix A which is factorized.
+%
+%   See also SYMBOLMF, MULTIFRONTAL.
+
+%   Copyright 2016 Yingzhou Li, Stanford University
 
 if isa(A,'Multifrontal')
     
