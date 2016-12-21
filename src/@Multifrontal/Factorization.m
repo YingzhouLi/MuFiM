@@ -35,19 +35,15 @@ end
         idx = Stree.idx;
         actidx = Stree.actidx;
         [L,D] = ldl(full(A(idx,idx)));
-        Linv = inv(L);
-        Dinv = inv(D);
         
-        ALDinv = A(actidx,idx)*Linv'*Dinv;
+        ALDinv = A(actidx,idx)/L'/D;
         
         A(actidx,actidx) = A(actidx,actidx) ...
-            - sparse(A(actidx,idx)*Linv'*Dinv*Linv*A(actidx,idx)');
+            - sparse(A(actidx,idx)/A(idx,idx)*A(actidx,idx)');
         
         Ltree.Mat = L;
-        Ltree.Matinv = Linv;
         Ltree.AMatinv = ALDinv;
         Dtree.Mat = D;
-        Dtree.Matinv = Dinv;
         
     end
 
@@ -65,20 +61,16 @@ end
         idx = Stree.idx;
         actidx = Stree.actidx;
         [L,U] = lu(full(A(idx,idx)));
-        Linv = inv(L);
-        Uinv = inv(U);
         
-        AUinv = A(actidx,idx)*Uinv;
-        ALinv = (Linv*A(idx,actidx))';
+        AUinv = A(actidx,idx)/U;
+        ALinv = (L\A(idx,actidx))';
         
         A(actidx,actidx) = A(actidx,actidx) ...
-            - sparse(A(actidx,idx)*Uinv*Linv*A(idx,actidx));
+            - sparse(A(actidx,idx)/A(idx,idx)*A(idx,actidx));
         
         Ltree.Mat = L;
-        Ltree.Matinv = Linv;
         Ltree.AMatinv = AUinv;
         Utree.Mat = U';
-        Utree.Matinv = Uinv';
         Utree.AMatinv = ALinv;
         
     end

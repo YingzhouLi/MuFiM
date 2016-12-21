@@ -1,5 +1,5 @@
 
-niter = 5:3:28;
+niter = 5:3:20;
 siz = nan(1,length(niter));
 timSym = nan(1,length(niter));
 timMF  = nan(1,length(niter));
@@ -7,6 +7,7 @@ timSol = nan(1,length(niter));
 for it = 1:length(niter)
     n = niter(it);
     A = getHfd2D(n,5);
+    A = A*A;
     siz(it) = size(A,1);
     
     tic;

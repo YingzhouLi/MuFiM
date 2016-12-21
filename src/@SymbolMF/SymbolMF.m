@@ -29,10 +29,6 @@ classdef SymbolMF
                 return;
             end
             
-            if ~issparse(A)
-                error('Only support sparse matrix');
-            end
-            
             [SMF.M,SMF.N] = size(A);
             
             if ishermitian(A)
@@ -46,8 +42,12 @@ classdef SymbolMF
                 error('Not supported yet');
             end
             
-            if SMF.symm > 0
+            if SMF.symm > 0 && issparse(A)
                 SMF.symboltree = BiTreePartition(A);
+            else
+                SMF.symboltree.type = 'leaf';
+                SMF.symboltree.idx = 1:SMF.M;
+                SMF.symboltree.actidx = [];
             end
         end
     end
