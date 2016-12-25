@@ -24,8 +24,8 @@ Btree = BiTreePartitionRecursion(1:N,[],cutoff);
         
         if length(gidx) <= cutoff
             Btree.type = 'leaf';
-            Btree.idx = gidx;
-            Btree.actidx = FindNonZero(gidx,actidx);
+            Btree.idx = sort(gidx);
+            Btree.actidx = sort(FindNonZero(gidx,actidx));
             return;
         end
         
@@ -35,8 +35,8 @@ Btree = BiTreePartitionRecursion(1:N,[],cutoff);
         sepidx = gidx(sepidx);
         
         Btree.type = 'node';
-        Btree.idx = sepidx;
-        Btree.actidx = FindNonZero(gidx,actidx);
+        Btree.idx = sort(sepidx);
+        Btree.actidx = sort(FindNonZero(gidx,actidx));
         
         subidx = [ FindNonZero(lidx,actidx) sepidx];
         Btree.ltree = BiTreePartitionRecursion(lidx,subidx,cutoff);

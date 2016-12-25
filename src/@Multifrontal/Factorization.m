@@ -13,6 +13,8 @@ function MF = Factorization(MF,A)
 
 %   Copyright 2016 Yingzhou Li, Stanford University
 
+P = zeros(size(A,1),1);
+
 if MF.symm == 1
     [MF.Ltree,MF.Dtree] = ...
         SymmFactorizationRecursion(MF.symboltree);
@@ -85,7 +87,7 @@ end
         
         extidx = actidx;
         Aupdate = Aupdate - AUinv*ALinv';
-
+        
         Ltree.Mat = L;
         Ltree.AMatinv = AUinv;
         Utree.Mat = U';
@@ -98,7 +100,7 @@ end
         
         llen = length(lidx);
         rlen = length(ridx);
-        [idx,~,IC] = unique([lidx,ridx],'stable');
+        [idx,~,IC] = unique([lidx,ridx],'sorted');
         lI = IC(1:llen);
         rI = IC(llen+1:llen+rlen);
         A = zeros(length(idx));
@@ -109,12 +111,32 @@ end
 
     function [Aidx,Aact,Aupdate] = ExtUpdate(idx,actidx,cidx,cA)
         
-        Aidx = full(A(idx,idx));
-        Aact = full(A(actidx,idx));
+        ilen = length(idx);
+        alen = length(actidx);
+        [I,J,V] = find(A(:,idx));
+        
+        P(idx) = 1:ilen;
+        Aidx = zeros(ilen,ilen);
+        iI = ismembc(I,idx);
+        Isub = I(iI);
+        Jsub = J(iI);
+        Vsub = V(iI);
+        Aidx(P(Isub) + (Jsub - 1)*ilen) = Vsub;
+        
+        P(actidx) = 1:alen;
+        Aact = zeros(alen,ilen);
+        iI = ismembc(I,actidx);
+        Isub = I(iI);
+        Jsub = J(iI);
+        Vsub = V(iI);
+        Aact(P(Isub) + (Jsub - 1)*alen) = Vsub;
+        
         Aupdate = zeros(length(actidx));
         
-        [~,iicI,cicI] = intersect(idx,cidx,'stable');
-        [~,aacI,cacI] = intersect(actidx,cidx,'stable');
+        iicI = ismembc(idx,cidx);
+        cicI = ismembc(cidx,idx);
+        aacI = ismembc(actidx,cidx);
+        cacI = ismembc(cidx,actidx);
         Aidx(iicI,iicI) = Aidx(iicI,iicI) + cA(cicI,cicI);
         Aact(aacI,iicI) = Aact(aacI,iicI) + cA(cacI,cicI);
         Aupdate(aacI,aacI) = cA(cacI,cacI);
@@ -124,13 +146,41 @@ end
     function [Aidx,Aactidx,Aidxact,Aupdate] = ...
             PatExtUpdate(idx,actidx,cidx,cA)
         
-        Aidx = full(A(idx,idx));
-        Aactidx = full(A(actidx,idx));
-        Aidxact = full(A(idx,actidx));
+        ilen = length(idx);
+        alen = length(actidx);
+        [I,J,V] = find(A(:,idx));
+        
+        P(idx) = 1:ilen;
+        Aidx = zeros(ilen,ilen);
+        iI = ismembc(I,idx);
+        Isub = I(iI);
+        Jsub = J(iI);
+        Vsub = V(iI);
+        Aidx(P(Isub) + (Jsub - 1)*ilen) = Vsub;
+        
+        P(actidx) = 1:alen;
+        Aactidx = zeros(alen,ilen);
+        iI = ismembc(I,actidx);
+        Isub = I(iI);
+        Jsub = J(iI);
+        Vsub = V(iI);
+        Aactidx(P(Isub) + (Jsub - 1)*alen) = Vsub;
+        
+        P(idx) = 1:ilen;
+        [I,J,V] = find(A(:,actidx));
+        Aidxact = zeros(ilen,alen);
+        iI = ismembc(I,idx);
+        Isub = I(iI);
+        Jsub = J(iI);
+        Vsub = V(iI);
+        Aidxact(P(Isub) + (Jsub - 1)*ilen) = Vsub;
+        
         Aupdate = zeros(length(actidx));
         
-        [~,iicI,cicI] = intersect(idx,cidx,'stable');
-        [~,aacI,cacI] = intersect(actidx,cidx,'stable');
+        iicI = ismembc(idx,cidx);
+        cicI = ismembc(cidx,idx);
+        aacI = ismembc(actidx,cidx);
+        cacI = ismembc(cidx,actidx);
         Aidx(iicI,iicI) = Aidx(iicI,iicI) + cA(cicI,cicI);
         Aactidx(aacI,iicI) = Aactidx(aacI,iicI) + cA(cacI,cicI);
         Aidxact(iicI,aacI) = Aidxact(iicI,aacI) + cA(cicI,cacI);
