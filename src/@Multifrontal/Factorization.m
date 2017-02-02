@@ -46,15 +46,19 @@ end
         [Aidx,Aact,Aupdate] = ExtUpdate(idx,actidx,cidx,cA);
         
         [L,D] = ldl(full(Aidx));
+        Linv = inv(L);
+        Dinv = inv(D);
         
-        ALDinv = Aact/L'/D;
+        ALDinv = Aact*Linv'*Dinv;
         
         extidx = actidx;
-        Aupdate = Aupdate - ALDinv/L*Aact';
+        Aupdate = Aupdate - ALDinv*Linv*Aact';
         
         Ltree.Mat = L;
+        Ltree.Matinv = Linv;
         Ltree.AMatinv = ALDinv;
         Dtree.Mat = D;
+        Dtree.Matinv = Dinv;
         
     end
 
@@ -81,16 +85,20 @@ end
         [Aidx,Aactidx,Aidxact,Aupdate] = PatExtUpdate(idx,actidx,cidx,cA);
         
         [L,U] = lu(Aidx);
+        Linv = inv(L);
+        Uinv = inv(U);
         
-        AUinv = Aactidx/U;
-        ALinv = (L\Aidxact)';
+        AUinv = Aactidx*Uinv;
+        ALinv = (Linv*Aidxact)';
         
         extidx = actidx;
         Aupdate = Aupdate - AUinv*ALinv';
         
         Ltree.Mat = L;
+        Ltree.Matinv = Linv;
         Ltree.AMatinv = AUinv;
         Utree.Mat = U';
+        Utree.Matinv = Uinv';
         Utree.AMatinv = ALinv;
         
     end

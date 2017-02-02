@@ -13,7 +13,7 @@ function Btree = BiTreePartition(A,cutoff)
 %   Copyright 2016 Yingzhou Li, Stanford University
 
 if nargin < 2
-    cutoff = 64;
+    cutoff = 128;
 end
 
 N = size(A,1);
@@ -48,7 +48,9 @@ Btree = BiTreePartitionRecursion(1:N,[],cutoff);
 
     function subidx = FindNonZero(idx,actidx)
         
-        [~,fullidx] = find(A(idx,actidx));
+        [I,J] = find(A(:,actidx));
+        iI = ismembc(I,idx);
+        fullidx = J(iI);
         subidx = actidx(unique(fullidx));
         
     end

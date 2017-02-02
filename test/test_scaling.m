@@ -1,14 +1,14 @@
 
 %niter = 5:3:20;
-niter = 2.^(3:7);
+niter = 2.^(4:8);
 siz = nan(1,length(niter));
 timSym = nan(1,length(niter));
 timMF  = nan(1,length(niter));
 timSol = nan(1,length(niter));
+timSolMatlab = nan(1,length(niter));
 for it = 1:length(niter)
     n = niter(it);
     A = getHfd2D(n,4);
-    %A = A+1i*speye(size(A));
     siz(it) = size(A,1);
     
     tic;
@@ -24,6 +24,10 @@ for it = 1:length(niter)
     tic;
     XX = AMF\Y;
     timSol(it) = toc;
+    
+    tic;
+    XXMatlab = A\Y;
+    timSolMatlab(it) = toc;
     
 end
 
@@ -56,3 +60,22 @@ loglog(siz,min(min(timSol))/min(siz)^3*siz.^3);
 xlabel('Size');
 ylabel('Time');
 legend('Sol time','linear ref','quadratic ref','cubic ref');
+
+figure(4)
+loglog(siz,timSolMatlab,'*');
+hold all;
+loglog(siz,min(min(timSolMatlab))/min(siz)*siz);
+loglog(siz,min(min(timSolMatlab))/min(siz)^2*siz.^2);
+loglog(siz,min(min(timSolMatlab))/min(siz)^3*siz.^3);
+xlabel('Size');
+ylabel('Time');
+legend('Matlab Sol time','linear ref','quadratic ref','cubic ref');
+
+tim = timSym + timMF + timSol;
+figure(5)
+loglog(siz,tim);
+hold all;
+loglog(siz,timSolMatlab);
+xlabel('Size');
+ylabel('Time');
+legend('MuFiM time','Matlab Sol time');

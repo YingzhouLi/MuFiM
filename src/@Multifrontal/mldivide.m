@@ -34,8 +34,10 @@ end
         
         idx = Stree.idx;
         actidx = Stree.actidx;
-        C(idx,:) = Ltree.Mat\C(idx,:);
-        C(actidx,:) = C(actidx,:) - Ltree.AMatinv*C(idx,:);
+        Cidx = C(idx,:);
+        Cidx = Ltree.Matinv*Cidx;
+        C(idx,:) = Cidx;
+        C(actidx,:) = C(actidx,:) - Ltree.AMatinv*Cidx;
         
     end
 
@@ -47,7 +49,7 @@ end
         end
         
         idx = Stree.idx;
-        C(idx,:) = Dtree.Mat\C(idx,:);
+        C(idx,:) = Dtree.Matinv*C(idx,:);
         
     end
 
@@ -55,8 +57,9 @@ end
         
         idx = Stree.idx;
         actidx = Stree.actidx;
-        C(idx,:) = C(idx,:) - Utree.AMatinv'*C(actidx,:);
-        C(idx,:) = Utree.Mat'\C(idx,:);
+        Cidx = C(idx,:);
+        Cidx = Cidx - Utree.AMatinv'*C(actidx,:);
+        C(idx,:) = Utree.Matinv'*Cidx;
         
         if strcmpi(Stree.type,'node')
             LeftDivSymmRecursionDown(Stree.rtree,Utree.rtree);
