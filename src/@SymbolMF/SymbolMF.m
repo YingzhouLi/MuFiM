@@ -21,6 +21,7 @@ classdef SymbolMF
         N
         symm
         symboltree
+        Nnode
     end
     methods
         function SMF = SymbolMF(A)
@@ -38,16 +39,17 @@ classdef SymbolMF
                 % symbolic symmetric, factorized as LU
                 SMF.symm = 2;
             else
-                SMF.symm = 0;
-                error('Not supported yet');
+                SMF.symm = 2;
+                A = (A+A')/2;
             end
             
             if SMF.symm > 0 && issparse(A)
-                SMF.symboltree = BiTreePartition(A);
+                [SMF.symboltree, SMF.Nnode] = BiTreePartition(A);
             else
                 SMF.symboltree.type = 'leaf';
                 SMF.symboltree.idx = 1:SMF.M;
                 SMF.symboltree.actidx = [];
+                SMF.Nnode = 1;
             end
         end
     end

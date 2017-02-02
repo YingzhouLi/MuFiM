@@ -1,4 +1,4 @@
-function Btree = BiTreePartition(A,cutoff)
+function [Btree, Nnode] = BiTreePartition(A,cutoff)
 % BITREEPARTITION Generates binary tree partition
 %   Btree = BITREEPARTITION(A) generates the binary tree partition for the
 %   graph of sparse matrix A. The graph of A is recursively bipartitioned
@@ -18,14 +18,15 @@ end
 
 N = size(A,1);
 
-Btree = BiTreePartitionRecursion(1:N,[],cutoff);
+[Btree, Nnode] = BiTreePartitionRecursion(1:N,[],cutoff);
 
-    function Btree = BiTreePartitionRecursion(gidx,actidx,cutoff)
+    function [Btree, Nnode] = BiTreePartitionRecursion(gidx,actidx,cutoff)
         
         if length(gidx) <= cutoff
             Btree.type = 'leaf';
             Btree.idx = sort(gidx);
             Btree.actidx = sort(FindNonZero(gidx,actidx));
+            Nnode = 1;
             return;
         end
         
@@ -39,10 +40,13 @@ Btree = BiTreePartitionRecursion(1:N,[],cutoff);
         Btree.actidx = sort(FindNonZero(gidx,actidx));
         
         subidx = [ FindNonZero(lidx,actidx) sepidx];
-        Btree.ltree = BiTreePartitionRecursion(lidx,subidx,cutoff);
+        [Btree.ltree, lnode] = ...
+            BiTreePartitionRecursion(lidx,subidx,cutoff);
         
         subidx = [ FindNonZero(ridx,actidx) sepidx];
-        Btree.rtree = BiTreePartitionRecursion(ridx,subidx,cutoff);
+        [Btree.rtree, rnode] = ...
+            BiTreePartitionRecursion(ridx,subidx,cutoff);
+        Nnode = lnode+rnode+1;
         
     end
 

@@ -12,12 +12,12 @@ if isa(B,'Multifrontal')
     C = A;
     
     if MF.symm == 1
-        RightDivSymmRecursionUp  (MF.symboltree,MF.Ltree);
-        RightDivSymmRecursionDiag(MF.symboltree,MF.Dtree);
-        RightDivSymmRecursionDown(MF.symboltree,MF.Ltree);
+        RightDivSymmUp  (MF.Nnode,MF.idxtree,MF.Ltree);
+        RightDivSymmDiag(MF.Nnode,MF.idxtree,MF.Dtree);
+        RightDivSymmDown(MF.Nnode,MF.idxtree,MF.Ltree);
     elseif MF.symm == 2
-        RightDivSymmRecursionUp  (MF.symboltree,MF.Utree);
-        RightDivSymmRecursionDown(MF.symboltree,MF.Ltree);
+        RightDivSymmUp  (MF.Nnode,MF.idxtree,MF.Utree);
+        RightDivSymmDown(MF.Nnode,MF.idxtree,MF.Ltree);
     end
     
 else
@@ -25,46 +25,37 @@ else
 end
 
 %=====================================================================
-    function RightDivSymmRecursionUp(Stree,Utree)
+    function RightDivSymmUp(Nnode,idxtree,Utree)
         
-        if strcmpi(Stree.type,'node')
-            RightDivSymmRecursionUp(Stree.rtree,Utree.rtree);
-            RightDivSymmRecursionUp(Stree.ltree,Utree.ltree);
+        for it = 1:Nnode
+            idx = idxtree(it).idx;
+            actidx = idxtree(it).actidx;
+            Cidx = C(:,idx);
+            Cidx = Cidx*Utree(it).Matinv';
+            C(:,idx) = Cidx;
+            C(:,actidx) = C(:,actidx) - Cidx*Utree(it).AMatinv';
         end
-        
-        idx = Stree.idx;
-        actidx = Stree.actidx;
-        Cidx = C(:,idx);
-        Cidx = Cidx*Utree.Matinv';
-        C(:,idx) = Cidx;
-        C(:,actidx) = C(:,actidx) - Cidx*Utree.AMatinv';
         
     end
 
-    function RightDivSymmRecursionDiag(Stree,Dtree)
+    function RightDivSymmDiag(Nnode,idxtree,Dtree)
         
-        if strcmpi(Stree.type,'node')
-            RightDivSymmRecursionDiag(Stree.ltree,Dtree.ltree);
-            RightDivSymmRecursionDiag(Stree.rtree,Dtree.rtree);
+        for it = 1:Nnode
+            idx = idxtree(it).idx;
+            C(:,idx) = C(:,idx)*Dtree(it).Matinv;
         end
-        
-        idx = Stree.idx;
-        C(:,idx) = C(:,idx)*Dtree.Matinv;
         
     end
 
-    function RightDivSymmRecursionDown(Stree,Ltree)
+    function RightDivSymmDown(Nnode,idxtree,Ltree)
         
-        idx = Stree.idx;
-        actidx = Stree.actidx;
-        Cidx = C(:,idx);
-        Cidx = Cidx - C(:,actidx)*Ltree.AMatinv;
-        Cidx = Cidx*Ltree.Matinv;
-        C(:,idx) = Cidx;
-        
-        if strcmpi(Stree.type,'node')
-            RightDivSymmRecursionDown(Stree.ltree,Ltree.ltree);
-            RightDivSymmRecursionDown(Stree.rtree,Ltree.rtree);
+        for it = Nnode:-1:1
+            idx = idxtree(it).idx;
+            actidx = idxtree(it).actidx;
+            Cidx = C(:,idx);
+            Cidx = Cidx - C(:,actidx)*Ltree(it).AMatinv;
+            Cidx = Cidx*Ltree(it).Matinv;
+            C(:,idx) = Cidx;
         end
         
     end

@@ -1,6 +1,6 @@
 
 %niter = 5:3:20;
-niter = 2.^(4:8);
+niter = 2.^(2:4);
 siz = nan(1,length(niter));
 timSym = nan(1,length(niter));
 timMF  = nan(1,length(niter));
@@ -8,7 +8,7 @@ timSol = nan(1,length(niter));
 timSolMatlab = nan(1,length(niter));
 for it = 1:length(niter)
     n = niter(it);
-    A = getHfd2D(n,4);
+    A = getHfd3D(n,2);
     siz(it) = size(A,1);
     
     tic;

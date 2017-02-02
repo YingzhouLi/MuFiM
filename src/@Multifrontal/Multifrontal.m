@@ -32,6 +32,7 @@ classdef Multifrontal < SymbolMF
         Ltree
         Utree
         Dtree
+        idxtree
     end
     methods
         function MF = Multifrontal(A,SMF)
@@ -48,6 +49,7 @@ classdef Multifrontal < SymbolMF
             MF.N          = SMF.N;
             MF.symm       = SMF.symm;
             MF.symboltree = SMF.symboltree;
+            MF.Nnode      = SMF.Nnode;
             
             MF = Factorization(MF,A);
             

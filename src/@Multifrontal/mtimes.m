@@ -13,12 +13,12 @@ if isa(A,'Multifrontal')
     C = B;
     
     if MF.symm == 1
-        LeftMulSymmRecursionUp  (MF.symboltree,MF.Ltree);
-        LeftMulSymmRecursionDiag(MF.symboltree,MF.Dtree);
-        LeftMulSymmRecursionDown(MF.symboltree,MF.Ltree);
+        LeftMulSymmUp  (MF.Nnode,MF.idxtree,MF.Ltree);
+        LeftMulSymmDiag(MF.Nnode,MF.idxtree,MF.Dtree);
+        LeftMulSymmDown(MF.Nnode,MF.idxtree,MF.Ltree);
     elseif MF.symm == 2
-        LeftMulSymmRecursionUp  (MF.symboltree,MF.Utree);
-        LeftMulSymmRecursionDown(MF.symboltree,MF.Ltree);
+        LeftMulSymmUp  (MF.Nnode,MF.idxtree,MF.Utree);
+        LeftMulSymmDown(MF.Nnode,MF.idxtree,MF.Ltree);
     end
     
 elseif isa(B,'Multifrontal')
@@ -27,102 +27,84 @@ elseif isa(B,'Multifrontal')
     C = A;
     
     if MF.symm == 1
-        RightMulSymmRecursionUp  (MF.symboltree,MF.Ltree);
-        RightMulSymmRecursionDiag(MF.symboltree,MF.Dtree);
-        RightMulSymmRecursionDown(MF.symboltree,MF.Ltree);
+        RightMulSymmUp  (MF.Nnode,MF.idxtree,MF.Ltree);
+        RightMulSymmDiag(MF.Nnode,MF.idxtree,MF.Dtree);
+        RightMulSymmDown(MF.Nnode,MF.idxtree,MF.Ltree);
     elseif MF.symm == 2
-        RightMulSymmRecursionUp  (MF.symboltree,MF.Ltree);
-        RightMulSymmRecursionDown(MF.symboltree,MF.Utree);
+        RightMulSymmUp  (MF.Nnode,MF.idxtree,MF.Ltree);
+        RightMulSymmDown(MF.Nnode,MF.idxtree,MF.Utree);
     end
     
 end
 
 %=====================================================================
-    function LeftMulSymmRecursionUp(Stree,Utree)
+    function LeftMulSymmUp(Nnode,idxtree,Utree)
         
-        if strcmpi(Stree.type,'node')
-            LeftMulSymmRecursionUp(Stree.ltree,Utree.ltree);
-            LeftMulSymmRecursionUp(Stree.rtree,Utree.rtree);
+        for it = 1:Nnode
+            idx = idxtree(it).idx;
+            actidx = idxtree(it).actidx;
+            Cidx = C(idx,:);
+            Cidx = Utree(it).Mat'*Cidx;
+            Cidx = Cidx + Utree(it).AMatinv'*C(actidx,:);
+            C(idx,:) = Cidx;
         end
-        
-        idx = Stree.idx;
-        actidx = Stree.actidx;
-        Cidx = C(idx,:);
-        Cidx = Utree.Mat'*Cidx;
-        Cidx = Cidx + Utree.AMatinv'*C(actidx,:);
-        C(idx,:) = Cidx;
         
     end
 
-    function LeftMulSymmRecursionDiag(Stree,Dtree)
+    function LeftMulSymmDiag(Nnode,idxtree,Dtree)
         
-        if strcmpi(Stree.type,'node')
-            LeftMulSymmRecursionDiag(Stree.ltree,Dtree.ltree);
-            LeftMulSymmRecursionDiag(Stree.rtree,Dtree.rtree);
+        for it = 1:Nnode
+            idx = idxtree(it).idx;
+            C(idx,:) = Dtree(it).Mat*C(idx,:);
         end
-        
-        idx = Stree.idx;
-        C(idx,:) = Dtree.Mat*C(idx,:);
         
     end
 
-    function LeftMulSymmRecursionDown(Stree,Ltree)
+    function LeftMulSymmDown(Nnode,idxtree,Ltree)
         
-        idx = Stree.idx;
-        actidx = Stree.actidx;
-        Cidx = C(idx,:);
-        C(actidx,:) = C(actidx,:) + Ltree.AMatinv*Cidx;
-        Cidx = Ltree.Mat*Cidx;
-        C(idx,:) = Cidx;
-        
-        if strcmpi(Stree.type,'node')
-            LeftMulSymmRecursionDown(Stree.rtree,Ltree.rtree);
-            LeftMulSymmRecursionDown(Stree.ltree,Ltree.ltree);
+        for it = Nnode:-1:1
+            idx = idxtree(it).idx;
+            actidx = idxtree(it).actidx;
+            Cidx = C(idx,:);
+            C(actidx,:) = C(actidx,:) + Ltree(it).AMatinv*Cidx;
+            Cidx = Ltree(it).Mat*Cidx;
+            C(idx,:) = Cidx;
         end
         
     end
 
 %=====================================================================
-    function RightMulSymmRecursionUp(Stree,Ltree)
+    function RightMulSymmUp(Nnode,idxtree,Ltree)
         
-        if strcmpi(Stree.type,'node')
-            RightMulSymmRecursionUp(Stree.rtree,Ltree.rtree);
-            RightMulSymmRecursionUp(Stree.ltree,Ltree.ltree);
+        for it = 1:Nnode
+            idx = idxtree(it).idx;
+            actidx = idxtree(it).actidx;
+            Cidx = C(:,idx);
+            Cidx = Cidx*Ltree(it).Mat;
+            Cidx = Cidx + C(:,actidx)*Ltree(it).AMatinv;
+            C(:,idx) = Cidx;
         end
-        
-        idx = Stree.idx;
-        actidx = Stree.actidx;
-        Cidx = C(:,idx);
-        Cidx = Cidx*Ltree.Mat;
-        Cidx = Cidx + C(:,actidx)*Ltree.AMatinv;
-        C(:,idx) = Cidx;
         
     end
 
-    function RightMulSymmRecursionDiag(Stree,Dtree)
+    function RightMulSymmDiag(Nnode,idxtree,Dtree)
         
-        if strcmpi(Stree.type,'node')
-            RightMulSymmRecursionDiag(Stree.ltree,Dtree.ltree);
-            RightMulSymmRecursionDiag(Stree.rtree,Dtree.rtree);
+        for it = 1:Nnode
+            idx = idxtree(it).idx;
+            C(:,idx) = C(:,idx)*Dtree(it).Mat;
         end
-        
-        idx = Stree.idx;
-        C(:,idx) = C(:,idx)*Dtree.Mat;
         
     end
 
-    function RightMulSymmRecursionDown(Stree,Utree)
+    function RightMulSymmDown(Nnode,idxtree,Utree)
         
-        idx = Stree.idx;
-        actidx = Stree.actidx;
-        Cidx = C(:,idx);
-        C(:,actidx) = C(:,actidx) + Cidx*Utree.AMatinv';
-        Cidx = Cidx*Utree.Mat';
-        C(:,idx) = Cidx;
-        
-        if strcmpi(Stree.type,'node')
-            RightMulSymmRecursionDown(Stree.ltree,Utree.ltree);
-            RightMulSymmRecursionDown(Stree.rtree,Utree.rtree);
+        for it = Nnode:-1:1
+            idx = idxtree(it).idx;
+            actidx = idxtree(it).actidx;
+            Cidx = C(:,idx);
+            C(:,actidx) = C(:,actidx) + Cidx*Utree(it).AMatinv';
+            Cidx = Cidx*Utree(it).Mat';
+            C(:,idx) = Cidx;
         end
         
     end

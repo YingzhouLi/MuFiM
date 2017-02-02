@@ -14,31 +14,38 @@ function MF = Factorization(MF,A)
 %   Copyright 2016 Yingzhou Li, Stanford University
 
 P = zeros(size(A,1),1);
+it = 0;
 
 if MF.symm == 1
-    [MF.Ltree,MF.Dtree] = ...
-        SymmFactorizationRecursion(MF.symboltree);
+    MF.Ltree = repmat(struct( 'Mat',[], 'Matinv',[], 'AMatinv',[] ), ...
+        MF.Nnode, 1);
+    MF.Dtree = repmat(struct( 'Mat',[], 'Matinv',[] ), MF.Nnode, 1);
+    MF.idxtree = repmat(struct( 'idx',[], 'actidx',[] ), MF.Nnode, 1);
+    SymmFactorizationRecursion(MF.symboltree);
 elseif MF.symm == 2
-    [MF.Ltree,MF.Utree] = ...
-        PatSymmFactorizationRecursion(MF.symboltree);
+    MF.Ltree = repmat(struct( 'Mat',[], 'Matinv',[], 'AMatinv',[] ), ...
+        MF.Nnode, 1);
+    MF.Utree = repmat(struct( 'Mat',[], 'Matinv',[], 'AMatinv',[] ), ...
+        MF.Nnode, 1);
+    MF.idxtree = repmat(struct( 'idx',[], 'actidx',[] ), MF.Nnode, 1);
+    PatSymmFactorizationRecursion(MF.symboltree);
 end
 
 %====================================================================
-    function [Ltree,Dtree,extidx,Aupdate] = ...
+    function [extidx,Aupdate] = ...
             SymmFactorizationRecursion(Stree)
         
         if strcmpi(Stree.type,'node')
-            [Ltree.ltree,Dtree.ltree,lidx,lA] = ...
-                SymmFactorizationRecursion(Stree.ltree);
+            [lidx,lA] = SymmFactorizationRecursion(Stree.ltree);
             
-            [Ltree.rtree,Dtree.rtree,ridx,rA] = ...
-                SymmFactorizationRecursion(Stree.rtree);
+            [ridx,rA] = SymmFactorizationRecursion(Stree.rtree);
             
             [cidx,cA] = MergeUpdate(lidx,lA,ridx,rA);
         else
             cidx = [];
             cA = [];
         end
+        
         
         idx = Stree.idx;
         actidx = Stree.actidx;
@@ -54,24 +61,25 @@ end
         extidx = actidx;
         Aupdate = Aupdate - ALDinv*Linv*Aact';
         
-        Ltree.Mat = L;
-        Ltree.Matinv = Linv;
-        Ltree.AMatinv = ALDinv;
-        Dtree.Mat = D;
-        Dtree.Matinv = Dinv;
+        it = it + 1;
+        MF.idxtree(it).idx    = idx;
+        MF.idxtree(it).actidx = actidx;
+        MF.Ltree(it).Mat      = L;
+        MF.Ltree(it).Matinv   = Linv;
+        MF.Ltree(it).AMatinv  = ALDinv;
+        MF.Dtree(it).Mat      = D;
+        MF.Dtree(it).Matinv   = Dinv;
         
     end
 
 %====================================================================
-    function [Ltree,Utree,extidx,Aupdate] = ...
+    function [extidx,Aupdate] = ...
             PatSymmFactorizationRecursion(Stree)
         
         if strcmpi(Stree.type,'node')
-            [Ltree.ltree,Utree.ltree,lidx,lA] = ...
-                PatSymmFactorizationRecursion(Stree.ltree);
+            [lidx,lA] = PatSymmFactorizationRecursion(Stree.ltree);
             
-            [Ltree.rtree,Utree.rtree,ridx,rA] = ...
-                PatSymmFactorizationRecursion(Stree.rtree);
+            [ridx,rA] = PatSymmFactorizationRecursion(Stree.rtree);
             
             [cidx,cA] = MergeUpdate(lidx,lA,ridx,rA);
         else
@@ -94,12 +102,15 @@ end
         extidx = actidx;
         Aupdate = Aupdate - AUinv*ALinv';
         
-        Ltree.Mat = L;
-        Ltree.Matinv = Linv;
-        Ltree.AMatinv = AUinv;
-        Utree.Mat = U';
-        Utree.Matinv = Uinv';
-        Utree.AMatinv = ALinv;
+        it = it + 1;
+        MF.idxtree(it).idx    = idx;
+        MF.idxtree(it).actidx = actidx;
+        MF.Ltree(it).Mat      = L;
+        MF.Ltree(it).Matinv   = Linv;
+        MF.Ltree(it).AMatinv  = AUinv;
+        MF.Utree(it).Mat      = U';
+        MF.Utree(it).Matinv   = Uinv';
+        MF.Utree(it).AMatinv  = ALinv;
         
     end
 
