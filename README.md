@@ -12,6 +12,14 @@ cd MuFiM
 matlab -nojvm -r "make;quit"
 ```
 
+
+### MuFiM Updating
+
+```
+git pull --recurse-submodules
+```
+
+
 ### Suggested Matlab toolbox
 
 MuFiM could adopt both [meshpart] and Metis to bipartition the graph of a sparse matrix.
