@@ -30,7 +30,12 @@ N = size(A,1);
             return;
         end
         
-        [lidx,ridx,sepidx] = METIS_SepPartition(A(gidx,gidx));
+        % METIS is faster
+        if exist('METIS_SepPartition','file')
+            [lidx,ridx,sepidx] = METIS_SepPartition(A(gidx,gidx));
+        else
+            [sepidx,lidx,ridx] = specsep(A(gidx,gidx));
+        end
         lidx = gidx(lidx);
         ridx = gidx(ridx);
         sepidx = gidx(sepidx);
