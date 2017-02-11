@@ -1,6 +1,6 @@
 
 %niter = 5:3:20;
-niter = 2.^(2:4);
+niter = 2.^(8:8);
 siz = nan(1,length(niter));
 timSym = nan(1,length(niter));
 timMF  = nan(1,length(niter));
@@ -8,7 +8,7 @@ timSol = nan(1,length(niter));
 timSolMatlab = nan(1,length(niter));
 for it = 1:length(niter)
     n = niter(it);
-    A = getHfd3D(n,2);
+    A = getHfd2D(n,4);
     siz(it) = size(A,1);
     
     tic;
@@ -17,7 +17,7 @@ for it = 1:length(niter)
     
     tic;
     AMF = Multifrontal(A,SMF);
-    timMF(it) = toc;
+    timMF(it) = toc
     
     X = randn(size(A,1),10);
     Y = A*X;
@@ -27,7 +27,7 @@ for it = 1:length(niter)
     
     tic;
     XXMatlab = A\Y;
-    timSolMatlab(it) = toc;
+    timSolMatlab(it) = toc
     
 end
 
