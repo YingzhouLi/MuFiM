@@ -56,10 +56,10 @@ end
         Linv = inv(L);
         Dinv = inv(D);
         
-        ALDinv = Aact*Linv'*Dinv;
+        ALDinv = Aact*L'\Dinv;
         
         extidx = actidx;
-        Aupdate = Aupdate - ALDinv*Linv*Aact';
+        Aupdate = Aupdate - ALDinv*L\Aact';
         
         it = it + 1;
         MF.idxtree(it).idx    = idx;
@@ -96,8 +96,8 @@ end
         Linv = inv(L);
         Uinv = inv(U);
         
-        AUinv = Aactidx*Uinv;
-        ALinv = (Linv*Aidxact)';
+        AUinv = Aactidx/U;
+        ALinv = (L\Aidxact)';
         
         extidx = actidx;
         Aupdate = Aupdate - AUinv*ALinv';

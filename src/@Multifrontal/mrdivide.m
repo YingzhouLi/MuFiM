@@ -24,6 +24,42 @@ else
     error('Multifrontal as a numeriter has not been implemented yet');
 end
 
+% %=====================================================================
+%     function RightDivSymmUp(Nnode,idxtree,Utree)
+%         
+%         for it = 1:Nnode
+%             idx = idxtree(it).idx;
+%             actidx = idxtree(it).actidx;
+%             Cidx = C(:,idx);
+%             Cidx = Cidx/Utree(it).Mat';
+%             C(:,idx) = Cidx;
+%             C(:,actidx) = C(:,actidx) - Cidx*Utree(it).AMatinv';
+%         end
+%         
+%     end
+% 
+%     function RightDivSymmDiag(Nnode,idxtree,Dtree)
+%         
+%         for it = 1:Nnode
+%             idx = idxtree(it).idx;
+%             C(:,idx) = C(:,idx)/Dtree(it).Mat;
+%         end
+%         
+%     end
+% 
+%     function RightDivSymmDown(Nnode,idxtree,Ltree)
+%         
+%         for it = Nnode:-1:1
+%             idx = idxtree(it).idx;
+%             actidx = idxtree(it).actidx;
+%             Cidx = C(:,idx);
+%             Cidx = Cidx - C(:,actidx)*Ltree(it).AMatinv;
+%             Cidx = Cidx/Ltree(it).Mat;
+%             C(:,idx) = Cidx;
+%         end
+%         
+%     end
+
 %=====================================================================
     function RightDivSymmUp(Nnode,idxtree,Utree)
         
